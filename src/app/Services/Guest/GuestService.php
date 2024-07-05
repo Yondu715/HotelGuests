@@ -2,18 +2,18 @@
 
 namespace App\Services\Guest;
 
-use App\Dto\In\Guest\CreateGuestDto;
-use App\Dto\In\Guest\GetGuestsDto;
-use App\Dto\In\Guest\UpdateGuestDto;
 use App\Models\Guest;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
+use App\Dto\In\Guest\GetGuestsDto;
+use App\Dto\In\Guest\CreateGuestDto;
+use App\Dto\In\Guest\UpdateGuestDto;
+use Illuminate\Contracts\Pagination\Paginator;
 
 final class GuestService
 {
-    public function getAll(GetGuestsDto $getGuestsDto): LengthAwarePaginator
+    public function getAll(GetGuestsDto $getGuestsDto): Paginator
     {
-        return Guest::query()->paginate(
+        return Guest::query()->simplePaginate(
             page: $getGuestsDto->page,
             perPage: $getGuestsDto->limit
         );
