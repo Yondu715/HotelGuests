@@ -1,0 +1,265 @@
+openapi: 3.0.3
+info:
+  title: Guests
+  version: 1.0.0
+servers:
+  - url: https://localhosts:80/api
+tags:
+  - name: guests
+    description: Гости
+
+paths:
+  
+  /guests:
+    get:
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '1'
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: '1'
+      tags:
+        - guests
+      summary: Получение всех гостей, доступных в системе
+      responses:
+        '200':
+          description: Успешное получение данных
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/GetGuestCollection'
+    post:
+      tags:
+        - guests
+      summary: Создание нового гостя в системе
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGuest'
+      responses:
+        "202":
+          description: Гость успешно создан
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/GetGuest'
+        "422":
+          description: Невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error422"
+
+  /guests/{guestId}:
+    get:
+      parameters:
+        - name: guestId
+          in: path
+          required: true
+          schema:
+            type: number
+      tags:
+        - guests
+      summary: Получение подробной информации о госте по его идентификатору
+      responses:
+        "200":
+          description: Успешное получение данных
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetGuest"
+        "404":
+          description: В системе нет такого ресурса
+        "422":
+          description: Невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error422"
+    patch:
+      parameters:
+        - name: guestId
+          in: path
+          required: true
+          schema:
+            type: number
+      tags:
+        - guests
+      summary: Изменение данных гостя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchGuest"
+      responses:
+        "200":
+          description: Успешное изменение данных
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetGuest"
+        "404":
+          description: В системе нет такого ресурса
+        "422":
+          description: Невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error422"
+
+    delete:
+      parameters:
+        - name: guestId
+          in: path
+          required: true
+          schema:
+            type: number
+      tags:
+        - guests
+      summary: Удаление гостя из системы
+      responses:
+        "204":
+          description: Успешное удаление аккаунта
+        "404":
+          description: В системе нет такого ресурса
+
+
+  
+
+components:
+  schemas:
+
+    Error422:
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            field1:
+              type: string
+              example: "Поле field1 должно быть строкой"
+            field2:
+              type: string
+              example: "Поле field2 должно быть строкой"
+              
+    Guest:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: 'Олег'
+        surname:
+          type: string
+          example: 'Адада'
+        email:
+          type: string
+          example: 'Oleg1337@test.ru'
+        phone:
+          type: string
+          example: '+78005553535'
+        country:
+          type: string
+          example: 'Россия'
+    
+    GetGuest:
+      type: object
+      properties:
+        data:
+          type: object
+          oneOf:
+            - $ref: '#/components/schemas/Guest'
+
+    PatchGuest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'Олег'
+        surname:
+          type: string
+          example: 'Адада'
+        email:
+          type: string
+          example: 'Oleg1337@test.ru'
+        phone:
+          type: string
+          example: '+78005553535'
+        country:
+          type: string
+          example: 'Россия'
+
+    GetGuestCollection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/Guest'
+        links:
+          type: object
+          properties:
+            first:
+              type: string
+              example: 'http://localhost/api/guests?page=1'
+            last:
+              type: string
+              example: 'http://localhost/api/guests?page=5'
+            prev:
+              type: string
+              example: null
+            next:
+              type: string
+              example: 'http://localhost/api/guests?page=2'
+        meta:
+          type: object
+          properties:
+            current_page:
+              type: integer
+              example: 1
+            from:
+              type: integer
+              example: 1
+            path:
+              type: string
+              example: 'http://localhost/api/guests'
+            per_page:
+              type: integer
+              example: 15
+            to:
+              type: integer
+              example: 4
+              
+    CreateGuest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'Максим'
+        surname:
+          type: string
+          example: 'Максимов'
+        email:
+          type: string
+          example: 'maxim@y.ru'
+        phone:
+          type: string
+          example: '+79999999999'
+        country:
+          type: string
+          example: 'Россия'          
+    
+    
